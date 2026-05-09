@@ -7,46 +7,50 @@ spring:
 
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri: https://library-auth-service.onrender.com
-          predicates:
-            - Path=/api/auth/**,/api/users/**
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: https://library-auth-service.onrender.com
+              predicates:
+                - Path=/api/auth/**,/api/users/**
 
-        - id: catalog-service
-          uri: https://library-catalog-service.onrender.com
-          predicates:
-            - Path=/api/books/**,/api/categories/**
+            - id: catalog-service
+              uri: https://library-catalog-service.onrender.com
+              predicates:
+                - Path=/api/books/**,/api/categories/**
 
-        - id: circulation-service
-          uri: https://library-circulation-service.onrender.com
-          predicates:
-            - Path=/api/borrows/**,/api/reservations/**
+            - id: circulation-service
+              uri: https://library-circulation-service.onrender.com
+              predicates:
+                - Path=/api/borrows/**,/api/reservations/**
 
-        - id: engagement-service
-          uri: https://library-engagement-service.onrender.com
-          predicates:
-            - Path=/api/favorites/**,/api/reviews/**
+            - id: engagement-service
+              uri: https://library-engagement-service.onrender.com
+              predicates:
+                - Path=/api/favorites/**,/api/reviews/**
 
-        - id: report-service
-          uri: https://library-report-service.onrender.com
-          predicates:
-            - Path=/api/reports/**
+            - id: report-service
+              uri: https://library-report-service.onrender.com
+              predicates:
+                - Path=/api/reports/**
 
-      globals:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://localhost:5173"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
+          globalcors:
+            corsConfigurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:5173"
+                  - "http://localhost:5174"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders:
+                  - "*"
+                allowCredentials: true
+
 management:
   endpoints:
     web:
