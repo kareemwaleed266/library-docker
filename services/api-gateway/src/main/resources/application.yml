@@ -1,7 +1,61 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: api-gateway
 
-  config:
-    import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: https://library-auth-service.onrender.com
+              predicates:
+                - Path=/api/auth/**,/api/users/**
 
+            - id: catalog-service
+              uri: https://library-catalog-service.onrender.com
+              predicates:
+                - Path=/api/books/**,/api/categories/**
+
+            - id: circulation-service
+              uri: https://library-circulation-service.onrender.com
+              predicates:
+                - Path=/api/borrows/**,/api/reservations/**
+
+            - id: engagement-service
+              uri: https://library-engagement-service.onrender.com
+              predicates:
+                - Path=/api/favorites/**,/api/reviews/**
+
+            - id: report-service
+              uri: https://library-report-service.onrender.com
+              predicates:
+                - Path=/api/reports/**
+
+          globalcors:
+            corsConfigurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:5173"
+                  - "http://localhost:5174"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders:
+                  - "*"
+                allowCredentials: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
