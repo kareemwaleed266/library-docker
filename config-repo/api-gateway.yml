@@ -7,38 +7,36 @@ spring:
 
   cloud:
     gateway:
-      server:
-        webflux:
-          discovery:
-            locator:
-              enabled: true
-              lower-case-service-id: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
 
-          routes:
-            - id: auth-service
-              uri: lb://auth-service
-              predicates:
-                - Path=/api/auth/**,/api/users/**
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**,/api/users/**
 
-            - id: catalog-service
-              uri: lb://catalog-service
-              predicates:
-                - Path=/api/books/**,/api/categories/**
+        - id: catalog-service
+          uri: lb://catalog-service
+          predicates:
+            - Path=/api/books/**,/api/categories/**
 
-            - id: circulation-service
-              uri: lb://circulation-service
-              predicates:
-                - Path=/api/borrows/**,/api/reservations/**
+        - id: circulation-service
+          uri: lb://circulation-service
+          predicates:
+            - Path=/api/borrows/**,/api/reservations/**
 
-            - id: engagement-service
-              uri: lb://engagement-service
-              predicates:
-                - Path=/api/favorites/**,/api/reviews/**
+        - id: engagement-service
+          uri: lb://engagement-service
+          predicates:
+            - Path=/api/favorites/**,/api/reviews/**
 
-            - id: report-service
-              uri: lb://report-service
-              predicates:
-                - Path=/api/reports/**
+        - id: report-service
+          uri: lb://report-service
+          predicates:
+            - Path=/api/reports/**
 
 management:
   endpoints:
@@ -48,10 +46,3 @@ management:
   endpoint:
     health:
       show-details: always
-
-spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
