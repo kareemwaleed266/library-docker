@@ -7,34 +7,29 @@ spring:
 
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-
       routes:
         - id: auth-service
-          uri: lb://auth-service
+          uri: https://library-auth-service.onrender.com
           predicates:
             - Path=/api/auth/**,/api/users/**
 
         - id: catalog-service
-          uri: lb://catalog-service
+          uri: https://library-catalog-service.onrender.com
           predicates:
             - Path=/api/books/**,/api/categories/**
 
         - id: circulation-service
-          uri: lb://circulation-service
+          uri: https://library-circulation-service.onrender.com
           predicates:
             - Path=/api/borrows/**,/api/reservations/**
 
         - id: engagement-service
-          uri: lb://engagement-service
+          uri: https://library-engagement-service.onrender.com
           predicates:
             - Path=/api/favorites/**,/api/reviews/**
 
         - id: report-service
-          uri: lb://report-service
+          uri: https://library-report-service.onrender.com
           predicates:
             - Path=/api/reports/**
 
@@ -42,7 +37,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always
+        include: health,info,gateway
