@@ -1,0 +1,17 @@
+com\library\report\client\CirculationReportClient.class
+com\library\report\dto\response\DashboardReportResponse.class
+com\library\report\controller\ReportController.class
+com\library\report\dto\response\CatalogReportResponse.class
+com\library\report\service\impl\ReportServiceImpl.class
+com\library\report\security\JwtAuthenticationFilter.class
+com\library\report\security\JwtService.class
+com\library\report\ReportServiceApplication.class
+com\library\report\config\JwtProperties.class
+com\library\report\dto\response\EngagementReportResponse.class
+com\library\report\service\ReportService.class
+com\library\report\client\EngagementReportClient.class
+com\library\report\exception\GlobalExceptionHandler.class
+com\library\report\client\CatalogReportClient.class
+com\library\report\dto\response\CirculationReportResponse.class
+com\library\report\aop\LoggingAspect.class
+com\library\report\config\SecurityConfig.class

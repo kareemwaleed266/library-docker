@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: report-service
+
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888}
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration

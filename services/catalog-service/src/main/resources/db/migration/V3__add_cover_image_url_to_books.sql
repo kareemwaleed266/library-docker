@@ -1,0 +1,2 @@
+ALTER TABLE books
+ADD COLUMN IF NOT EXISTS cover_image_url VARCHAR(1000);

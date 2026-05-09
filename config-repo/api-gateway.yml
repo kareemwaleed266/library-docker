@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+
+          routes:
+            - id: auth-service
+              uri: lb://auth-service
+              predicates:
+                - Path=/api/auth/**,/api/users/**
+
+            - id: catalog-service
+              uri: lb://catalog-service
+              predicates:
+                - Path=/api/books/**,/api/categories/**
+
+            - id: circulation-service
+              uri: lb://circulation-service
+              predicates:
+                - Path=/api/borrows/**,/api/reservations/**
+
+            - id: engagement-service
+              uri: lb://engagement-service
+              predicates:
+                - Path=/api/favorites/**,/api/reviews/**
+
+            - id: report-service
+              uri: lb://report-service
+              predicates:
+                - Path=/api/reports/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

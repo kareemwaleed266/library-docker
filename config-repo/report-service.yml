@@ -1,0 +1,18 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: report-service
+
+jwt:
+  secret: ${JWT_SECRET:library-management-system-secret-key-for-development-only-change-in-production}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

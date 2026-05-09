@@ -1,0 +1,159 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: library-postgres
+    environment:
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_password
+      POSTGRES_DB: library_default_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - library_postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U library_user -d library_default_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  config-server:
+    build:
+      context: ./services/config-server
+    container_name: library-config-server
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+    volumes:
+      - ./config-repo:/config-repo
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  discovery-server:
+    build:
+      context: ./services/discovery-server
+    container_name: library-discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+    depends_on:
+      - config-server
+    restart: on-failure
+
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+    container_name: library-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    depends_on:
+      - config-server
+      - discovery-server
+    restart: on-failure
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+    container_name: library-auth-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_password
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    depends_on:
+      postgres:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+    restart: on-failure
+
+  catalog-service:
+    build:
+      context: ./services/catalog-service
+    container_name: library-catalog-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_password
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      CLOUDINARY_CLOUD_NAME: demo
+      CLOUDINARY_API_KEY: demo
+      CLOUDINARY_API_SECRET: demo
+    depends_on:
+      postgres:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+    restart: on-failure
+
+  circulation-service:
+    build:
+      context: ./services/circulation-service
+    container_name: library-circulation-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_password
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    depends_on:
+      postgres:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+    restart: on-failure
+
+  engagement-service:
+    build:
+      context: ./services/engagement-service
+    container_name: library-engagement-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_password
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    depends_on:
+      postgres:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+    restart: on-failure
+
+  report-service:
+    build:
+      context: ./services/report-service
+    container_name: library-report-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    depends_on:
+      - config-server
+      - discovery-server
+      - catalog-service
+      - circulation-service
+      - engagement-service
+    restart: on-failure
+
+volumes:
+  library_postgres_data:
